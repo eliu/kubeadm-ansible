@@ -5,21 +5,10 @@
 在要执行ansible脚本的机器上安装ansible运行需要的环境：
 
 ```
-sudo yum install -y epel-release
-
-sudo yum install -y \
-    ansible \
-    git \
-    httpd-tools \
-    pyOpenSSL \
-    python-cryptography \
-    python-lxml \
-    python-netaddr \
-    python-passlib \
-    python-pip
-
-# 查看ansible版本（version>=2.4.0.0）
-ansible --version
+sudo yum install epel-release -y 
+sudo yum install git python36 sshpass -y
+sudo python3.6 -m ensurepip
+sudo /usr/local/bin/pip3 install --no-cache-dir ansible==2.7.5 netaddr -i https://mirrors.aliyun.com/pypi/simple/
 ```
 
 克隆项目：
@@ -431,7 +420,10 @@ spec:
         diskId: "d-1ierokwer8234jowe"
 ```
 
-## 8. 升级集群
+## 8. 刷新集群证书
 
-- **集群更新存在一定风险，请谨慎操作**
-- 使用命令：`ansible-playbook -i inventory/hosts upgrade-to-1.9.9.yml`
+> 刷新证书的前提需要保证CA根证书存在，证书刷新后会重启master节点 kubelet 以应用新的证书，届时可能导致1-2分钟无法操作集群，但业务应用是不受影响的。
+
+```
+ansible-playbook -i inventory/hosts -e @inventory/vars renew-certs.yml
+```

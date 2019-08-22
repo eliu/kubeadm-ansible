@@ -9,23 +9,10 @@ Kubeadmin ansible is a toolkit for simple and quick installing k8s cluster.
 Install the ansible run environment on the machine where the ansible script is to be executed:
 
 ```
-sudo yum install -y epel-release
-
-sudo yum install -y \
-    ansible \
-    git \
-    httpd-tools \
-    pyOpenSSL \
-    python-cryptography \
-    python-lxml \
-    python-netaddr \
-    python-passlib \
-    python-pip
-
-```
-View the version of ansible (version>=2.4.0.0)
-```
-ansible --version
+sudo yum install epel-release -y 
+sudo yum install git python36 sshpass -y
+sudo python3.6 -m ensurepip
+sudo /usr/local/bin/pip3 install --no-cache-dir ansible==2.7.5 netaddr
 ```
 
 Clone project：
@@ -442,9 +429,13 @@ If you find any shortcomings or bugs, please describe them in the [issue](https:
 
 ## How to contribute
 Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
+Pull requests are welcome! Follow [this link](https://github.com/choerodon/choerodon/blob/master/CONTRIBUTING.md) for more information on how to contribute.
 
 
-## 8. Upgrading the cluster
+## 8. Refresh cluster certificate
 
-- **There are certain risks in cluster update. Please be cautious.**
-- Use command：`ansible-playbook -i inventory/hosts upgrade-to-1.9.9.yml`
+> The prerequisite for refreshing the certificate is to ensure that the CA root certificate exists. After the certificate is refreshed, the master node kubelet is restarted to apply the new certificate. At this time, the cluster may not be operated for 1-2 minutes, but the business application is not affected.
+
+```
+ansible-playbook -i inventory/hosts -e @inventory/vars renew-certs.yml
+```
